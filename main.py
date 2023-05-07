@@ -27,49 +27,63 @@ if __name__ == '__main__':
 
     # ---------- Window作成 ---------- 
     root.title("音声認識くん")  # 画面タイトル
-    root.geometry('500x500')   # 画面サイズ
+    #root.geometry('500x500')   # 画面サイズ
     root.resizable(False, False)  # リサイズ不可
 
-    # ---------- Frame作成 ---------- 
-    frame_top   = tkinter.Frame(root)
-    frame_sel   = tkinter.Frame(root)
-    frame_recog = tkinter.Frame(root)
-    frame_trans = tkinter.Frame(root)
 
+    # ---------- Frame作成 ----------
+    frame_left   = tkinter.Frame(root)
+    frame_center = tkinter.Frame(root)
+    frame_right  = tkinter.Frame(root)
+    frame_bottom = tkinter.Frame(root)
 
     # ---------- Frame配置 ----------
-    frame_top.grid(row=0, column=0)
-    frame_sel.grid(row=0, column=1)
-    frame_recog.grid(row=1, column=0, columnspan=2)
-    frame_trans.grid(row=2, column=0, columnspan=2)
-    
+    frame_left.grid(row=0, column=0)
+    frame_center.grid(row=0, column=1)
+    frame_right.grid(row=0, column=2)
+    frame_bottom.grid(row=1, column=0, columnspan=3)
+
+    #
+    label_recog = tkinter.Label(frame_left, text="話す言葉")
+    label_recog.grid(row=0, column=0, padx=5, pady=10, sticky=tkinter.E)
+
+    # Combobox
+    cb_recog_menu = [] #メニューリスト
+    for val in lang_tbl:
+        cb_recog_menu.append(val[LANG_TBL_NAME])
+    cb_recog= ttk.Combobox(frame_left, textvariable=tkinter.StringVar(),values=cb_recog_menu,state="readonly",width=25)
+    cb_recog.current(0)
+    cb_recog.grid(row=0, column=1, padx=5, pady=10,sticky=tkinter.W)
+
+    # Text
+    text_recog = tkinter.Text(frame_left, relief=tkinter.SOLID, width=60, height=40)
+    text_recog.config(state=tkinter.DISABLED)
+    text_recog.config(bg="gray97", bd=0)
+    text_recog.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+
+
+    # Label
+    label_trans = tkinter.Label(frame_right, text="翻訳する言語")
+    label_trans.grid(row=0, column=0, padx=5, pady=10, sticky=tkinter.E)
+
+    # Combobox
+    cb_trans_menu = [] #メニューリスト
+    for val in lang_tbl:
+        cb_trans_menu.append(val[LANG_TBL_NAME])
+    cb_trans = ttk.Combobox(frame_right, textvariable=tkinter.StringVar(),values=cb_trans_menu,state="readonly",width=25)
+    cb_trans.current(0)
+    cb_trans.grid(row=0, column=1, padx=5, pady=10, sticky=tkinter.W)
+
+    # Text
+    text_recog = tkinter.Text(frame_right, relief=tkinter.SOLID, width=60, height=40, padx=10)
+    text_recog.config(state=tkinter.DISABLED)
+    text_recog.config(bg="gray97", bd=0)
+    text_recog.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+
 
     # ---------- Widget配置 ----------
     # Button
-    ptt_btn = tkinter.Button(frame_top, text="開始", command=click_ptt_btn)
-    ptt_btn.pack()
-
-    # Label
-    label_src = tkinter.Label(frame_sel, text="言語")
-    label_src.grid(row=0,column=0)
-    label_dst = tkinter.Label(frame_sel, text="翻訳言語")
-    label_dst.grid(row=0,column=1)
-
-    # Combobox
-    cb_src_menu = [] #メニューリスト
-    for val in lang_tbl:
-        cb_src_menu.append(val[LANG_TBL_NAME])
-    cb_src = ttk.Combobox(frame_sel, textvariable=tkinter.StringVar(),values=cb_src_menu,state="readonly",width=25)
-    cb_src.current(0)
-    cb_src.grid(row=1,column=0)
-
-    # Combobox
-    cb_dst_menu = [] #メニューリスト
-    for val in lang_tbl:
-        cb_dst_menu.append(val[LANG_TBL_NAME])
-    cb_dst = ttk.Combobox(frame_sel, textvariable=tkinter.StringVar(),values=cb_dst_menu,state="readonly",width=25)
-    cb_dst.current(0)
-    cb_dst.grid(row=1,column=1)
-
+    ptt_btn = tkinter.Button(frame_bottom, text="開始", command=click_ptt_btn)
+    ptt_btn.pack(padx=20, pady=20)
 
     root.mainloop()
