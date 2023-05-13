@@ -40,6 +40,7 @@ task_id = 0
 # メインタスク
 def rec_task():
     global loop
+    loop = True
 
     print("start rec_task")
 
