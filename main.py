@@ -1,5 +1,5 @@
 import tkinter
-from tkinter import ttk
+from tkinter import ttk,messagebox
 import threading    #スレッド
 
 
@@ -28,7 +28,6 @@ def record_task():
     ptt_btn.config(state=tkinter.NORMAL)
     ptt_btn.update()
 
-
 def click_ptt_btn():
     print("click_ptt_btn")
 
@@ -39,6 +38,12 @@ def click_ptt_btn():
     #録音は専用のタスクで実施する
     task_id = threading.Thread(target=record_task)
     task_id.start()
+
+
+#フレームの終了「×」を押された時のイベント
+def click_close():
+    if messagebox.askokcancel("確認", "アプリを終了しますか？"):
+        root.destroy()
 
 
 if __name__ == '__main__':
@@ -105,5 +110,8 @@ if __name__ == '__main__':
     # Button
     ptt_btn = tkinter.Button(frame_bottom, text="開始", command=click_ptt_btn)
     ptt_btn.pack(padx=20, pady=20)
+
+    #終了ボタン押下イベント登録
+    root.protocol("WM_DELETE_WINDOW", click_close)
 
     root.mainloop()
