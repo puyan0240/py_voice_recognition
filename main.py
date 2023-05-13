@@ -1,5 +1,7 @@
 import tkinter
 from tkinter import ttk
+import threading    #スレッド
+
 
 #言語テーブル
 LANG_TBL_NAME=0
@@ -18,8 +20,26 @@ lang_tbl = [
     ["Vietnamese (ベトナム語)", "vi"]
 ]
 
+
+def record_task():
+    print("start record_task")
+
+    #ボタン押下禁止解除
+    ptt_btn.config(state=tkinter.NORMAL)
+    ptt_btn.update()
+
+
 def click_ptt_btn():
-    print("押されました")
+    print("click_ptt_btn")
+
+    #ボタン押下禁止
+    ptt_btn.config(state=tkinter.DISABLED)
+    ptt_btn.update()
+
+    #録音は専用のタスクで実施する
+    task_id = threading.Thread(target=record_task)
+    task_id.start()
+
 
 if __name__ == '__main__':
 
