@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import ttk,messagebox
+import time
 import threading    #スレッド
 
 
@@ -20,24 +21,40 @@ lang_tbl = [
     ["Vietnamese (ベトナム語)", "vi"]
 ]
 
+loop = True
 
-def record_task():
-    print("start record_task")
+# メインタスク
+def main_task():
+    global loop
 
-    #ボタン押下禁止解除
-    ptt_btn.config(state=tkinter.NORMAL)
-    ptt_btn.update()
+    print("start main_task")
 
+    while loop:
+        print("+")
+        time.sleep(1)
+    print("end main_task")
+
+
+
+# PTTボタン押下
 def click_ptt_btn():
+    global task_id,loop
+
     print("click_ptt_btn")
 
     #ボタン押下禁止
     ptt_btn.config(state=tkinter.DISABLED)
     ptt_btn.update()
 
-    #録音は専用のタスクで実施する
-    task_id = threading.Thread(target=record_task)
-    task_id.start()
+    #ボタン押下禁止解除
+    ptt_btn.config(state=tkinter.NORMAL)
+    ptt_btn.update()
+
+    # メインタスク停止
+    loop = False
+    task_id.join() # タスク終了まで待つ
+    print("complete")
+
 
 
 #フレームの終了「×」を押された時のイベント
@@ -110,6 +127,12 @@ if __name__ == '__main__':
     # Button
     ptt_btn = tkinter.Button(frame_bottom, text="開始", command=click_ptt_btn)
     ptt_btn.pack(padx=20, pady=20)
+
+
+    #メインタスクを起動する
+    task_id = threading.Thread(target=main_task)
+    task_id.start()
+
 
     #終了ボタン押下イベント登録
     root.protocol("WM_DELETE_WINDOW", click_close)
