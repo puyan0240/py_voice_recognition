@@ -1,5 +1,7 @@
 import tkinter
 from tkinter import ttk,messagebox
+import pyaudio  #マイク入力
+import wave # WAVEファイル保存
 import time
 import threading    #スレッド
 
@@ -21,26 +23,67 @@ lang_tbl = [
     ["Vietnamese (ベトナム語)", "vi"]
 ]
 
+
+#状態
+STS_IDLE = 0
+STS_REC = 1
+STS_RECOG = 2
+STS_PLAY = 3
+sts = STS_IDLE
+
 loop = True
+task_id = 0
 
 # メインタスク
-def main_task():
+def rec_task():
     global loop
 
-    print("start main_task")
+    print("start rec_task")
+
+    # マイク入力設定
+    audio = pyaudio.PyAudio()
+    stream = audio.open(format=pyaudio.paInt16, rate=44100, channels=1, input_device_index=1, input=True, frames_per_buffer=1024)
+
+    # WAVE保存設定
+    wave_f = wave.open('test.wav', 'wb') #ファイルオープン
+    wave_f.setnchannels(1)  # チャンネル指定
+    wave_f.setsampwidth(2)  # サンプル幅:16bit
+    wave_f.setframerate(44100)  #フレームレート
+
 
     while loop:
         print("+")
-        time.sleep(1)
-    print("end main_task")
+        data = stream.read(1024)
+        wave_f.writeframes(data)
+
+    # WAVEファイルの作成
+    wave_f.close()
+    # Audioデバイスの解放
+    stream.stop_stream()
+    stream.close()
+    audio.terminate()
+
+    print("end rec_task")
 
 
 
 # PTTボタン押下
 def click_ptt_btn():
-    global task_id,loop
+    global task_id,loop,sts
 
-    print("click_ptt_btn")
+    print(f"click_ptt_btn  sts:{sts}")
+
+    if sts == STS_IDLE:
+        sts = STS_REC
+
+        # 録音タスクを起動する
+        task_id = threading.Thread(target=rec_task)
+        task_id.start()
+
+    else:
+        sts = STS_IDLE
+        stop_task()
+
 
     #ボタン押下禁止
     ptt_btn.config(state=tkinter.DISABLED)
@@ -51,19 +94,25 @@ def click_ptt_btn():
     ptt_btn.update()
 
 
+# タスク停止
+def stop_task():
+    global loop,task_id
+    print("stop task")
 
+    if task_id != 0:
+        loop = False
+        # タスク終了まで待つ
+        task_id.join()
+        print("complete")
 
 
 #フレームの終了「×」を押された時のイベント
 def click_close():
-    global loop
-
     if messagebox.askokcancel("確認", "アプリを終了しますか？"):
-        # メインタスク停止
-        loop = False
-        task_id.join() # タスク終了まで待つ
-        #print("stop task")
+        # タスク停止
+        stop_task()
 
+        # tkinter終了
         root.destroy()
 
 
@@ -131,12 +180,6 @@ if __name__ == '__main__':
     # Button
     ptt_btn = tkinter.Button(frame_bottom, text="開始", command=click_ptt_btn)
     ptt_btn.pack(padx=20, pady=20)
-
-
-    #メインタスクを起動する
-    task_id = threading.Thread(target=main_task)
-    task_id.start()
-
 
     #終了ボタン押下イベント登録
     root.protocol("WM_DELETE_WINDOW", click_close)
