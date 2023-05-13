@@ -31,6 +31,9 @@ STS_RECOG = 2
 STS_PLAY = 3
 sts = STS_IDLE
 
+TMP_FILENAME = "tmp.wav"
+
+
 loop = True
 task_id = 0
 
@@ -45,7 +48,7 @@ def rec_task():
     stream = audio.open(format=pyaudio.paInt16, rate=44100, channels=1, input_device_index=1, input=True, frames_per_buffer=1024)
 
     # WAVE保存設定
-    wave_f = wave.open('test.wav', 'wb') #ファイルオープン
+    wave_f = wave.open(TMP_FILENAME, 'wb') #ファイルオープン
     wave_f.setnchannels(1)  # チャンネル指定
     wave_f.setsampwidth(2)  # サンプル幅:16bit
     wave_f.setframerate(44100)  #フレームレート
@@ -76,6 +79,8 @@ def click_ptt_btn():
     if sts == STS_IDLE:
         sts = STS_REC
 
+        ptt_btn['text'] = "停止"
+
         # 録音タスクを起動する
         task_id = threading.Thread(target=rec_task)
         task_id.start()
@@ -84,6 +89,7 @@ def click_ptt_btn():
         sts = STS_IDLE
         stop_task()
 
+        ptt_btn['text'] = "開始"
 
     #ボタン押下禁止
     ptt_btn.config(state=tkinter.DISABLED)
