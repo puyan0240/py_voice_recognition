@@ -50,16 +50,20 @@ def click_ptt_btn():
     ptt_btn.config(state=tkinter.NORMAL)
     ptt_btn.update()
 
-    # メインタスク停止
-    loop = False
-    task_id.join() # タスク終了まで待つ
-    print("complete")
+
 
 
 
 #フレームの終了「×」を押された時のイベント
 def click_close():
+    global loop
+
     if messagebox.askokcancel("確認", "アプリを終了しますか？"):
+        # メインタスク停止
+        loop = False
+        task_id.join() # タスク終了まで待つ
+        #print("stop task")
+
         root.destroy()
 
 
