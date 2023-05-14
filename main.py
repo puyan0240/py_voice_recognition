@@ -2,6 +2,9 @@ import tkinter
 from tkinter import ttk,messagebox
 import pyaudio  #マイク入力
 import wave # WAVEファイル保存
+import speech_recognition  #音声認識API
+import os
+from os import path
 import time
 import threading    #スレッド
 
@@ -46,7 +49,12 @@ def rec_task():
 
     # マイク入力設定
     audio = pyaudio.PyAudio()
-    stream = audio.open(format=pyaudio.paInt16, rate=44100, channels=1, input_device_index=1, input=True, frames_per_buffer=1024)
+    stream = audio.open(format=pyaudio.paInt16,
+                        rate=44100,
+                        channels=1,
+                        input_device_index=1,
+                        input=True,
+                        frames_per_buffer=1024)
 
     # WAVE保存設定
     wave_f = wave.open(TMP_FILENAME, 'wb') #ファイルオープン
@@ -56,7 +64,7 @@ def rec_task():
 
 
     while loop:
-        print("+")
+        #print("+")
         data = stream.read(1024)
         wave_f.writeframes(data)
 
@@ -86,9 +94,29 @@ def click_ptt_btn():
         task_id = threading.Thread(target=rec_task)
         task_id.start()
 
+    elif sts == STS_REC:
+        sts = STS_RECOG
+        stop_task()
+
+        # WAVファイルの絶対パス
+        audio_path = path.join(path.dirname(path.realpath(__file__)), TMP_FILENAME)
+        print(audio_path)
+
+        # 音声認識開始
+        sprec = speech_recognition.Recognizer()  # インスタンスを生成
+        with speech_recognition.AudioFile(audio_path) as sprec_file:
+            try:
+                sprec_audio = sprec.record(sprec_file)
+                sprec_text = sprec.recognize_google(sprec_audio, language='ja-JP')
+                print(sprec_text)
+            except speech_recognition.UnknownValueError as e:
+                print("Google Speech Recognition could not understand audio")
+
+        # WAVファイルを削除
+        os.remove(audio_path)      
+
     else:
         sts = STS_IDLE
-        stop_task()
 
         ptt_btn['text'] = "開始"
 
