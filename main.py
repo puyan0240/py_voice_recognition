@@ -3,6 +3,8 @@ from tkinter import ttk,messagebox
 import pyaudio  #マイク入力
 import wave # WAVEファイル保存
 import speech_recognition  #音声認識API
+import googletrans
+from googletrans import Translator  #google翻訳
 import os
 from os import path
 import time
@@ -82,6 +84,7 @@ def rec_task():
 # PTTボタン押下
 def click_ptt_btn():
     global task_id,loop,sts
+    recong_flag=False
 
     print(f"click_ptt_btn  sts:{sts}")
 
@@ -114,15 +117,38 @@ def click_ptt_btn():
 
                 # テキスト領域に出力
                 text_recog.config(state=tkinter.NORMAL)  # 入力許可
-                text_recog.insert(tkinter.END, sprec_text+"\n")  # 改行付きで
+                text_recog.insert(tkinter.END, sprec_text)  # 書き込み
                 text_recog.config(state=tkinter.DISABLED)  # 入力規制
                 text_recog.update()  # 表示更新
+
+                recong_flag = True; # 音声認識あり
 
             except speech_recognition.UnknownValueError as e:
                 print("Google Speech Recognition could not understand audio")
 
         # WAVファイルを削除
         os.remove(audio_path)      
+
+
+        if recong_flag == True:
+            #音声認識結果テキストの読み出し
+            text = text_recog.get('1.0', tkinter.END)
+            print(text)
+            
+            try:
+                # 翻訳実行
+                trans = Translator()
+                result = trans.translate(text, 'ja', 'en')
+                print(result.text)
+
+                # 翻訳結果を出力
+                text_trans.config(state=tkinter.NORMAL)
+                text_trans.insert(tkinter.END, result.text)
+                text_trans.config(state=tkinter.DISABLED)
+                text_trans.update()
+
+            except Exception as e:
+                print(e)
 
     else:
         sts = STS_IDLE
