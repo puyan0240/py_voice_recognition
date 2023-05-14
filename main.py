@@ -108,7 +108,13 @@ def click_ptt_btn():
             try:
                 sprec_audio = sprec.record(sprec_file)
                 sprec_text = sprec.recognize_google(sprec_audio, language='ja-JP')
-                print(sprec_text)
+
+                # テキスト領域に出力
+                text_recog.config(state=tkinter.NORMAL)  # 入力許可
+                text_recog.insert(tkinter.END, sprec_text+"\n")  # 改行付きで
+                text_recog.config(state=tkinter.DISABLED)  # 入力規制
+                text_recog.update()  # 表示更新
+
             except speech_recognition.UnknownValueError as e:
                 print("Google Speech Recognition could not understand audio")
 
@@ -205,10 +211,10 @@ if __name__ == '__main__':
     cb_trans.grid(row=0, column=1, padx=5, pady=10, sticky=tkinter.W)
 
     # Text
-    text_recog = tkinter.Text(frame_right, relief=tkinter.SOLID, width=60, height=40, padx=10)
-    text_recog.config(state=tkinter.DISABLED)
-    text_recog.config(bg="gray97", bd=0)
-    text_recog.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+    text_trans = tkinter.Text(frame_right, relief=tkinter.SOLID, width=60, height=40, padx=10)
+    text_trans.config(state=tkinter.DISABLED)
+    text_trans.config(bg="gray97", bd=0)
+    text_trans.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
 
 
     # ---------- Widget配置 ----------
