@@ -90,6 +90,9 @@ def click_ptt_btn():
 
         ptt_btn['text'] = "停止"
 
+        # テキスト領域をクリアする
+        clr_text()
+
         # 録音タスクを起動する
         task_id = threading.Thread(target=rec_task)
         task_id.start()
@@ -145,6 +148,19 @@ def stop_task():
         # タスク終了まで待つ
         task_id.join()
         print("complete")
+
+
+# テキスト領域のクリア
+def clr_text():
+    # 音声認識結果テキスト領域をクリア
+    text_recog.config(state=tkinter.NORMAL)
+    text_recog.delete('1.0', tkinter.END)
+    text_recog.config(state=tkinter.DISABLED)
+
+    #　翻訳結果テキスト領域をクリア
+    text_trans.config(state=tkinter.NORMAL)
+    text_trans.delete('1.0', tkinter.END)
+    text_trans.config(state=tkinter.DISABLED)
 
 
 #フレームの終了「×」を押された時のイベント
