@@ -138,7 +138,7 @@ def click_ptt_btn():
             try:
                 # 翻訳実行
                 trans = Translator()
-                result = trans.translate(text, 'ja', 'en')
+                result = trans.translate(text, src='ja', dest='en')
                 print(result.text)
 
                 # 翻訳結果を出力
