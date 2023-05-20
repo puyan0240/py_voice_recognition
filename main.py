@@ -133,6 +133,7 @@ def click_ptt_btn():
 
             except speech_recognition.UnknownValueError as e:
                 print("Google Speech Recognition could not understand audio")
+                recong_flag = True #DBG
 
         # WAVファイルを削除
         os.remove(audio_path)      
@@ -143,10 +144,24 @@ def click_ptt_btn():
             text = text_recog.get('1.0', tkinter.END)
             print(text)
             
+            #翻訳元言語の確定
+            lang_src = ""
+            for val in lang_tbl:
+                if val[LANG_TBL_NAME] == cb_recog.get():
+                    lang_src = val[LANG_TBL_PARAME]
+                    break
+            
+            #翻訳先言語の確定
+            lang_dest = ""
+            for val in lang_tbl:
+                if val[LANG_TBL_NAME] == cb_trans.get():
+                    lang_dest = val[LANG_TBL_PARAME]
+                    break
+
+            #翻訳実行
             try:
-                # 翻訳実行
                 trans = Translator()
-                result = trans.translate(text, src='ja', dest='en')
+                result = trans.translate(text, src=lang_src, dest=lang_dest)
                 print(result.text)
 
                 # 翻訳結果を出力
