@@ -13,19 +13,20 @@ import threading    #スレッド
 
 #言語テーブル
 LANG_TBL_NAME=0
-LANG_TBL_PARAME=1
+LANG_TBL_PARAME=1   # 翻訳、読み上げ
+LANG_TBL_RECOG=2    # 音声認識
 lang_tbl = [
-    ["Japanese (日本語)", "ja"],
-    ["English (英語)", "en"],
-    ["German (ドイツ語)", "de"],
-    ["French (フランス語)", "fr"],
-    ["Italian (イタリア語)", "it"],
-    ["Spanish (スペイン語)", "es"],
-    ["Portuguese (ポルトガル語)", "pt"],
-    ["Russian (ロシア語)", "ru"],
-    ["Korean (韓国語)", "ko"],
-    ["chinese (中国語)", "zh-cn"],
-    ["Vietnamese (ベトナム語)", "vi"]
+    ["Japanese (日本語)", "ja", "ja-JP"],
+    ["English (英語)", "en", "en-US"],
+    ["German (ドイツ語)", "de", "de-DE"],
+    ["French (フランス語)", "fr", "fr-FR"],
+    ["Italian (イタリア語)", "it", "it-IT"],
+    ["Spanish (スペイン語)", "es", "eu-ES"],
+    ["Portuguese (ポルトガル語)", "pt-PT"],
+    ["Russian (ロシア語)", "ru", "ru-RU"],
+    ["Korean (韓国語)", "ko", "ko-KR"],
+    ["chinese (中国語)", "zh-cn", "zh"],
+    ["Vietnamese (ベトナム語)", "vi", "vi-VN"]
 ]
 
 
@@ -108,12 +109,20 @@ def click_ptt_btn():
         audio_path = path.join(path.dirname(path.realpath(__file__)), TMP_FILENAME)
         print(audio_path)
 
+        #音声認識言語の確定
+        lang_src = ""
+        for val in lang_tbl:
+            if val[LANG_TBL_NAME] == cb_recog.get():
+                lang_src = val[LANG_TBL_RECOG]
+                #print(lang_src)
+                break
+
         # 音声認識開始
         sprec = speech_recognition.Recognizer()  # インスタンスを生成
         with speech_recognition.AudioFile(audio_path) as sprec_file:
             try:
                 sprec_audio = sprec.record(sprec_file)
-                sprec_text = sprec.recognize_google(sprec_audio, language='ja-JP')
+                sprec_text = sprec.recognize_google(sprec_audio, language=lang_src)
 
                 # テキスト領域に出力
                 text_recog.config(state=tkinter.NORMAL)  # 入力許可
