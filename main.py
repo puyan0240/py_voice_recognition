@@ -93,10 +93,9 @@ def click_ptt_btn():
 
     print(f"click_ptt_btn  sts:{sts}")
 
-    if sts == STS_IDLE:
-        sts = STS_REC
-
+    if ptt_btn['text'] == "開始":
         ptt_btn['text'] = "停止"
+        ptt_btn.update()
 
         # テキスト領域をクリアする
         clr_text()
@@ -105,8 +104,10 @@ def click_ptt_btn():
         task_id = threading.Thread(target=rec_task)
         task_id.start()
 
-    elif sts == STS_REC:
-        sts = STS_RECOG
+    else:
+        ptt_btn['text'] = "開始"
+        ptt_btn.update()
+
         stop_task()
 
         # WAVファイルの絶対パス
@@ -140,7 +141,8 @@ def click_ptt_btn():
                 #recong_flag = True #DBG
 
         # WAVファイルを削除
-        os.remove(audio_path)      
+        #os.remove(audio_path)
+        os.remove(TMP_FILENAME)      
 
 
         if recong_flag == True:
@@ -203,19 +205,6 @@ def click_ptt_btn():
                 os.remove(TMP_PLAY_FILENAME)
             except Exception as e:
                 print("remove err: "+str(e))
-
-    else:
-        sts = STS_IDLE
-
-        ptt_btn['text'] = "開始"
-
-    #ボタン押下禁止
-    ptt_btn.config(state=tkinter.DISABLED)
-    ptt_btn.update()
-
-    #ボタン押下禁止解除
-    ptt_btn.config(state=tkinter.NORMAL)
-    ptt_btn.update()
 
 
 # タスク停止
