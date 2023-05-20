@@ -129,7 +129,8 @@ def click_ptt_btn():
                 print(f"voice recognition err: {str(e)}")
 
         # WAVファイルを削除
-        os.remove(TMP_FILENAME)      
+        if os.path.exists(TMP_FILENAME) == True:
+            os.remove(TMP_FILENAME)      
 
         #翻訳
         if recong_flag == True:
@@ -188,10 +189,8 @@ def click_ptt_btn():
                 print("play err: "+str(e))
 
             #音声ファイルを削除
-            try:
+            if os.path.exists(TMP_PLAY_FILENAME) == True:
                 os.remove(TMP_PLAY_FILENAME)
-            except Exception as e:
-                print("remove err: "+str(e))
 
 
 ############################################################
