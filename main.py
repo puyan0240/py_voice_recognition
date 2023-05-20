@@ -157,7 +157,7 @@ def click_ptt_btn():
             try:
                 trans = Translator()
                 result = trans.translate(text, src=lang_src, dest=lang_dest)
-                print(result.text)
+                #print(result.text)
 
                 # 翻訳結果を出力
                 text_trans.config(state=tkinter.NORMAL)
