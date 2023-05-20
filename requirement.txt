@@ -9,6 +9,7 @@ google-api-core==2.11.0
 google-api-python-client==2.86.0
 google-auth==2.17.3
 google-auth-httplib2==0.1.0
+google-cloud-core==2.3.2
 google-cloud-speech==2.19.0
 googleapis-common-protos==1.59.0
 googletrans-py==4.0.0
