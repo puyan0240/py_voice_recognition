@@ -9,7 +9,6 @@ from gtts import gTTS   # 文字->音声ファイル化
 from playsound import playsound  #音声ファイルを再生
 import os
 from os import path
-import time
 import threading    #スレッド
 
 
@@ -31,27 +30,20 @@ lang_tbl = [
     ["Vietnamese (ベトナム語)", "vi", "vi-VN"]
 ]
 
-
-#状態
-STS_IDLE = 0
-STS_REC = 1
-STS_RECOG = 2
-STS_PLAY = 3
-sts = STS_IDLE
-
+#一時ファイル
 TMP_FILENAME = "tmp.wav"
 TMP_PLAY_FILENAME = "tmp_play.mp3"
-
 
 loop = True
 task_id = 0
 
-# メインタスク
+
+############################################################
+# マイク入力録音タスク
+############################################################
 def rec_task():
     global loop
     loop = True
-
-    print("start rec_task")
 
     # マイク入力設定
     audio = pyaudio.PyAudio()
@@ -68,9 +60,7 @@ def rec_task():
     wave_f.setsampwidth(2)  # サンプル幅:16bit
     wave_f.setframerate(44100)  #フレームレート
 
-
     while loop:
-        #print("+")
         data = stream.read(1024)
         wave_f.writeframes(data)
 
@@ -81,17 +71,14 @@ def rec_task():
     stream.close()
     audio.terminate()
 
-    print("end rec_task")
 
-
-
-# PTTボタン押下
+############################################################
+# PTTボタン押下した
+############################################################
 def click_ptt_btn():
     global task_id,loop,sts
     recong_flag=False
     trans_flag=False
-
-    print(f"click_ptt_btn  sts:{sts}")
 
     if ptt_btn['text'] == "開始":
         ptt_btn['text'] = "停止"
@@ -100,7 +87,7 @@ def click_ptt_btn():
         # テキスト領域をクリアする
         clr_text()
 
-        # 録音タスクを起動する
+        # マイク入力録音タスクを起動する
         task_id = threading.Thread(target=rec_task)
         task_id.start()
 
@@ -108,11 +95,11 @@ def click_ptt_btn():
         ptt_btn['text'] = "開始"
         ptt_btn.update()
 
+        # マイク入力録音タスクを停止する
         stop_task()
 
         # WAVファイルの絶対パス
         audio_path = path.join(path.dirname(path.realpath(__file__)), TMP_FILENAME)
-        print(audio_path)
 
         #音声認識言語の確定
         lang_src = ""
@@ -136,15 +123,15 @@ def click_ptt_btn():
 
                 recong_flag = True; # 音声認識あり
 
-            except speech_recognition.UnknownValueError as e:
+            except speech_recognition.UnknownValueError:
                 print("Google Speech Recognition could not understand audio")
-                #recong_flag = True #DBG
+            except Exception as e:
+                print(f"voice recognition err: {str(e)}")
 
         # WAVファイルを削除
-        #os.remove(audio_path)
         os.remove(TMP_FILENAME)      
 
-
+        #翻訳
         if recong_flag == True:
             #音声認識結果テキストの読み出し
             text = text_recog.get('1.0', tkinter.END)
@@ -207,19 +194,21 @@ def click_ptt_btn():
                 print("remove err: "+str(e))
 
 
+############################################################
 # タスク停止
+############################################################
 def stop_task():
     global loop,task_id
-    print("stop task")
 
     if task_id != 0:
         loop = False
         # タスク終了まで待つ
         task_id.join()
-        print("complete")
 
 
+############################################################
 # テキスト領域のクリア
+############################################################
 def clr_text():
     # 音声認識結果テキスト領域をクリア
     text_recog.config(state=tkinter.NORMAL)
@@ -232,7 +221,9 @@ def clr_text():
     text_trans.config(state=tkinter.DISABLED)
 
 
+############################################################
 #フレームの終了「×」を押された時のイベント
+############################################################
 def click_close():
     if messagebox.askokcancel("確認", "アプリを終了しますか？"):
         # タスク停止
@@ -240,6 +231,7 @@ def click_close():
 
         # tkinter終了
         root.destroy()
+
 
 
 if __name__ == '__main__':
