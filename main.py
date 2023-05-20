@@ -5,6 +5,8 @@ import wave # WAVEファイル保存
 import speech_recognition  #音声認識API
 import googletrans
 from googletrans import Translator  #google翻訳
+from gtts import gTTS   # 文字->音声ファイル化
+from playsound import playsound  #音声ファイルを再生
 import os
 from os import path
 import time
@@ -38,6 +40,7 @@ STS_PLAY = 3
 sts = STS_IDLE
 
 TMP_FILENAME = "tmp.wav"
+TMP_PLAY_FILENAME = "tmp_play.mp3"
 
 
 loop = True
@@ -86,6 +89,7 @@ def rec_task():
 def click_ptt_btn():
     global task_id,loop,sts
     recong_flag=False
+    trans_flag=False
 
     print(f"click_ptt_btn  sts:{sts}")
 
@@ -133,7 +137,7 @@ def click_ptt_btn():
 
             except speech_recognition.UnknownValueError as e:
                 print("Google Speech Recognition could not understand audio")
-                recong_flag = True #DBG
+                #recong_flag = True #DBG
 
         # WAVファイルを削除
         os.remove(audio_path)      
@@ -142,7 +146,8 @@ def click_ptt_btn():
         if recong_flag == True:
             #音声認識結果テキストの読み出し
             text = text_recog.get('1.0', tkinter.END)
-            print(text)
+            #print(text)
+            #text = "こんにちは"
             
             #翻訳元言語の確定
             lang_src = ""
@@ -170,8 +175,34 @@ def click_ptt_btn():
                 text_trans.config(state=tkinter.DISABLED)
                 text_trans.update()
 
+                trans_flag = True # 翻訳成功
+
             except Exception as e:
                 print(e)
+
+        #再生実行
+        if trans_flag == True:
+            #翻訳テキストの内容取得
+            text = text_trans.get('1.0', tkinter.END)
+
+            #音声ファイル化
+            try:
+                out = gTTS(text, lang=lang_dest, slow=False)
+                out.save(TMP_PLAY_FILENAME)
+            except Exception as e:
+                print("save err: "+str(e))
+
+            #音声ファイルを再生
+            try:
+                playsound(TMP_PLAY_FILENAME)
+            except Exception as e:
+                print("play err: "+str(e))
+
+            #音声ファイルを削除
+            try:
+                os.remove(TMP_PLAY_FILENAME)
+            except Exception as e:
+                print("remove err: "+str(e))
 
     else:
         sts = STS_IDLE
