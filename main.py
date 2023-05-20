@@ -99,7 +99,7 @@ def click_ptt_btn():
         stop_task()
 
         # WAVファイルの絶対パス
-        audio_path = path.join(path.dirname(path.realpath(__file__)), TMP_FILENAME)
+        audio_path = os.getcwd()+"\\"+TMP_FILENAME;
 
         #音声認識言語の確定
         lang_src = ""
@@ -129,8 +129,8 @@ def click_ptt_btn():
                 print(f"voice recognition err: {str(e)}")
 
         # WAVファイルを削除
-        if os.path.exists(TMP_FILENAME) == True:
-            os.remove(TMP_FILENAME)      
+        if os.path.exists(audio_path) == True:
+            os.remove(audio_path)      
 
         #翻訳
         if recong_flag == True:
