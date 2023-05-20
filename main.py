@@ -22,7 +22,7 @@ lang_tbl = [
     ["French (フランス語)", "fr", "fr-FR"],
     ["Italian (イタリア語)", "it", "it-IT"],
     ["Spanish (スペイン語)", "es", "eu-ES"],
-    ["Portuguese (ポルトガル語)", "pt-PT"],
+    ["Portuguese (ポルトガル語)", "pt", "pt-PT"],
     ["Russian (ロシア語)", "ru", "ru-RU"],
     ["Korean (韓国語)", "ko", "ko-KR"],
     ["chinese (中国語)", "zh-cn", "zh"],
@@ -114,7 +114,6 @@ def click_ptt_btn():
         for val in lang_tbl:
             if val[LANG_TBL_NAME] == cb_recog.get():
                 lang_src = val[LANG_TBL_RECOG]
-                #print(lang_src)
                 break
 
         # 音声認識開始
